@@ -1,0 +1,66 @@
+[
+    {
+       	"namespaces": ["com.github.jrgen.test.domain.Name"],
+        "data": {
+            "firstName": [
+				"john",
+				"jane",
+				"david",
+				"danielle",
+				"tom",
+				"theresa",
+				"mike",
+				"michelle"
+            ],
+            "lastName": [
+                "white",
+                "brown",
+                "johnson",
+                "jones",
+                "smith",
+                "thomas"
+            ],
+            "middleName": [
+                "a","b", "c","d", "e", "f", "g", "h", "i", "j", "k",
+                "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v",
+                "w", "x", "y", "z"
+            ],
+            "salutation" : [
+            	"Mr", "Mrs", "Dr", "Ms", null
+            ]
+        }
+    },
+    {
+    	"namespaces": ["com.github.jrgen.test.domain.CollectionsTestBean"],
+    	"data" : {
+    		"strIntMap" : [
+    			{"1" : 1, "-100" : -100, "1000" : 1000}
+    		]
+    	}
+    },
+    {
+    	"namespaces": ["com.github.jrgen.test.domain.ImmutableName"],
+    	"data" : {
+    		"0": [
+					"jane",
+					"danielle",
+					"theresa",
+					"michelle"
+			],
+			"1": [                
+				"white",
+                "brown",
+                "johnson",
+                "jones",
+                "smith",
+                "thomas"
+            ],
+            "2" : [
+            	"a","b", "c","d", "e", "f", "g", "h", "i", "j", "k"
+            ],
+            "3" : [
+            	"Mrs", "Dr", "Ms", null
+            ]
+    	}
+    }  
+]

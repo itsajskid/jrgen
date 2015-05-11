@@ -1,0 +1,28 @@
+[
+    {
+       	"namespaces": ["com.github.jrgen.test.domain.Address"],
+        "data": {
+            "street": [
+                "Elm St.",
+                "Main St.",
+                "View St.",
+                "Maple St.",
+                "Washington St.",
+                "Lake St.",
+                "Hill St.",
+                "Fourth St.",
+                "Oak St.",
+                "Pine Ave.",
+                "Park Ave.",
+                "Fifth Ave.",
+                "Third Ave.",
+                "Sunset Blvd.",
+                "MLK Blvd.",
+                "North Blvd."
+            ],
+            "otherStreet": [
+            	"SUITE", "APT", null
+            ]
+        }
+    }  
+]

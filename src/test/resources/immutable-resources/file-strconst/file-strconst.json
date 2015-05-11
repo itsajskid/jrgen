@@ -1,0 +1,8 @@
+[
+	{
+		"namespaces" : ["java.io.File"],
+		"data" : {
+			"0": ["C:\\foo.txt", "/usr/home/foo.txt"]
+		}
+	}
+]

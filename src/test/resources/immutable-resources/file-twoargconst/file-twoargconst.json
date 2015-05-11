@@ -1,0 +1,9 @@
+[
+	{
+		"namespaces" : ["java.io.File"],
+		"data" : {
+			"0": ["C:\\foo", "/usr/home/"],
+			"1": ["foo.txt", "bar.sh", "baz.bat"]
+		}
+	}
+]
