@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * This class manages a set of properties associated with a class type that 
  * should be ignored when the associated class type is called upon to be 
  * generated.
- * <p>
+ * </p>
  * 
  * <p>
  * The {@link ObjectMapper} class provides a means for the developer to ignore 
@@ -176,6 +176,8 @@ public class TransientPropertyHandler {
 	 * Setter method that accepts a reference to a mapping of all associated 
 	 * properties and classes to be ignored.
 	 * 
+	 * @param transientPropertiesMap the mapping of properties to be ignored 
+	 * for each class entry.
 	 * @throws IllegalArgumentException when the transientPropertiesMap 
 	 * parameter is null.
 	 * 

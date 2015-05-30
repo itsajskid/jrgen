@@ -149,6 +149,8 @@ public class JrgenUtil {
      * 
      * @param param the object reference that is checked against a 
      * null value.
+     * @param paramName the name of the parameter being checked against a 
+     * null value. This is for messaging/logging purposes.
      * @throws IllegalArgumentException if the param reference is null.
      */
     public static void validateNonNullArgument (Object param, 
