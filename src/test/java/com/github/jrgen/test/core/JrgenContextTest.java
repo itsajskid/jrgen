@@ -138,5 +138,29 @@ public class JrgenContextTest {
 				new File(resource);		
 		log.info(classpathFile);
 	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void setAbstractTypeHandlerNullTest() {
+		ctx.setAbstractTypeHandler(null);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void setSettingsNullTest() {
+		ctx.setSettings(null);
+	}
 
+	@Test(expected=IllegalArgumentException.class)
+	public void setTransientPropertiesHandlerNullTest() {
+		ctx.setTransientPropertyHandler(null);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void setWorkflowNullTest() {
+		ctx.setWorkflow(null);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void setTypeBuildersNullTest() {
+		ctx.setTypeBuilders(null);
+	}
 }

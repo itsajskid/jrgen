@@ -139,7 +139,7 @@ public class AbstractTypeHandler {
 	 * {@link ObjectMapper} will be returned.
 	 * 
 	 * @return a new {@link ObjectMapper} instance or the {@link ObjectMapper} 
-	 * instance that previously set.
+	 * instance that was previously set.
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public ObjectMapper getObjectMapper() {

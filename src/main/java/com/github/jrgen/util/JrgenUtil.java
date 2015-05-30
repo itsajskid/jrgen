@@ -132,14 +132,34 @@ public class JrgenUtil {
     
     /**
      * Validates that the number is a non-negative number. If this is false, 
-     * then and {@link IllegalArgumentException} is thrown.
+     * then an {@link IllegalArgumentException} is thrown.
      * 
      * @param num the number to validate as a non-negative number.
+     * @throws IllegalArgumentException if the number is a negative number.
      */
     public static void validatePositiveNumber (long num) {
     	if (num < 0) {
     		throw negativeNumber(num);
     	}
+    }
+    
+    /**
+     * Validates that the parameter passed is not null. If the parameter is 
+     * null an {@link IllegalArgumentException} is thrown.
+     * 
+     * @param param the object reference that is checked against a 
+     * null value.
+     * @throws IllegalArgumentException if the param reference is null.
+     */
+    public static void validateNonNullArgument (Object param, 
+    		String paramName) {
+		if (param == null) {
+			String message = getMessages()
+					.getString("nonnull.argument.exception");
+			
+			throw new IllegalArgumentException(String.format(message, 
+					paramName));
+		}    	
     }
     
 	private static <T extends Number> IllegalArgumentException minGreaterThanMax (

@@ -1,6 +1,8 @@
 package com.github.jrgen.context;
 
 import static java.util.Collections.unmodifiableMap;
+import static com.github.jrgen.util.JrgenUtil.validateNonNullArgument;
+import static com.github.jrgen.util.JrgenUtil.getMessages;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,7 +43,7 @@ import com.github.jrgen.typebuilder.MapTypeBuilder;
 import com.github.jrgen.typebuilder.PrimitiveTypeBuilder;
 import com.github.jrgen.typebuilder.TypeBuilder;
 import com.github.jrgen.typehandler.AbstractTypeHandler;
-import com.github.jrgen.util.JrgenUtil;
+import com.github.jrgen.typehandler.TransientPropertyHandler;
 import com.github.jrgen.workflow.DefaultWorkflow;
 import com.github.jrgen.workflow.Workflow;
 
@@ -129,6 +131,7 @@ public final class JrgenContext {
 	private Workflow workflow;
 	private List<TypeBuilder<?>> typeBuilders;
 	private AbstractTypeHandler abstractTypeHandler;
+	private TransientPropertyHandler transientPropertyHandler;
 
 	/**
 	 * Constructs an instance using the default {@link Settings}.
@@ -141,8 +144,11 @@ public final class JrgenContext {
 	 * Constructs an instance using the provided {@link Settings} object.
 	 * 
 	 * @param settings the provided {@link Settings} instance.
+	 * @throws IllegalArgumentException if the settings parameter is null.
 	 */
 	public JrgenContext(Settings settings) {
+		validateNonNullArgument(settings, "settings");
+		
 		typeMap = new HashMap<JavaType, Configuration>();
 		configSet = new LinkedHashSet<Configuration>();
 		
@@ -150,6 +156,7 @@ public final class JrgenContext {
 		abstractTypeHandler = new AbstractTypeHandler();
 		workflow = new DefaultWorkflow();
 		typeBuilders = new ArrayList<TypeBuilder<?>>();
+		transientPropertyHandler = new TransientPropertyHandler();
 		initialized = false;
 	}
 	
@@ -267,7 +274,7 @@ public final class JrgenContext {
 	 */	
 	public Object generate (JavaType javaType) {
 		if (!isInitialized()) {
-			throw new JrgenInitializationException(JrgenUtil.getMessages()
+			throw new JrgenInitializationException(getMessages()
 						.getString("jrgencontext.notinitialized.exception"));
 		}
 		
@@ -354,8 +361,10 @@ public final class JrgenContext {
 	 * Sets the {@link Settings} object for this instance of JrgenContext.
 	 * 
 	 * @param settings the {@link Settings} object.
+	 * @throws IllegalArgumentException if the settings parameter is null.
 	 */
 	public void setSettings(Settings settings) {
+		validateNonNullArgument(settings, "settings");
 		this.settings = settings;
 	}
 
@@ -365,6 +374,7 @@ public final class JrgenContext {
 	 * @param workflow the {@link Workflow} object.
 	 */
 	public void setWorkflow(Workflow workflow) {
+		validateNonNullArgument(workflow, "workflow");
 		this.workflow = workflow;
 	}
 	
@@ -374,8 +384,10 @@ public final class JrgenContext {
 	 * JrgenContext.
 	 * 
 	 * @param typeBuilders The {@link List} of {@link TypeBuilder}s to use.
+	 * @throws IllegalArgumentException if the typeBuilders parameter is null.
 	 */
 	public void setTypeBuilders(List<TypeBuilder<?>> typeBuilders) {
+		validateNonNullArgument(typeBuilders, "typeBuilders");
 		this.typeBuilders = typeBuilders;
 	}
 
@@ -435,9 +447,39 @@ public final class JrgenContext {
 	 * of JrgenContext.
 	 * 
 	 * @param abstractTypeHandler the {@link AbstractTypeHandler} object.
+	 * @throws IllegalArgumentException if the abstractTypeHandler param is 
+	 * null.
 	 */
-	public void setAbstractTypeHandler(AbstractTypeHandler abstractTypeHandler) {
+	public void setAbstractTypeHandler(
+			AbstractTypeHandler abstractTypeHandler) {
+		validateNonNullArgument(abstractTypeHandler, "abstractTypeHandler");
 		this.abstractTypeHandler = abstractTypeHandler;
+	}
+
+	/**
+	 * Returns the {@link TransientPropertyHandler} object associated with 
+	 * this instance of JrgenContext.
+	 * 
+	 * @return the {@link TransientPropertyHandler} object.
+	 */
+	public TransientPropertyHandler getTransientPropertyHandler() {
+		return transientPropertyHandler;
+	}
+
+	/**
+	 * Sets the given {@link TransientPropertyHandler} object to this 
+	 * instance of JrgenContext.
+	 * 
+	 * @param transientPropertyHandler the {@link TransientPropertyHandler} 
+	 * object.
+	 * @throws IllegalArgumentException if the transientPropertyHandler is 
+	 * null.
+	 */
+	public void setTransientPropertyHandler(
+			TransientPropertyHandler transientPropertyHandler) {
+		validateNonNullArgument(transientPropertyHandler, 
+				"transientPropertyHandler");
+		this.transientPropertyHandler = transientPropertyHandler;
 	}
 
 	/**

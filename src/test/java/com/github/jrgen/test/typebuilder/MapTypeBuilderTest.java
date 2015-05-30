@@ -162,11 +162,11 @@ public class MapTypeBuilderTest {
 				Name.Salutation.class, 
 				long[].class);
 		
-		Map<Name.Salutation, long[]> m = (Map<Salutation, long[]>) 
-				jrgenContext.generate(javaType);
-		
 		//Guarantee we have one element at least...
 		settings.setMinContainerSize(1);
+		
+		Map<Name.Salutation, long[]> m = (Map<Salutation, long[]>) 
+				jrgenContext.generate(javaType);
 		
 		for (Entry<Name.Salutation, long[]> entry : m.entrySet()) {
 			log.info(String.format("%s=%s", entry.getKey(), 
@@ -175,5 +175,5 @@ public class MapTypeBuilderTest {
 		
 		TestCase.assertFalse(MapUtils.isEmpty(m));
 	}
-	
+
 }

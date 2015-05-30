@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -57,7 +58,6 @@ public class ConfigurationBasedTypeBuilder implements TypeBuilder<Object> {
 	private JrgenContext jrgenContext;
 	private Random random;	
 	private Descriptor descriptor;
-	private AbstractTypeHandler abstractTypeHandler;
 	
 	/**
 	 * Constructs a new instance of the ConfigurationBasedTypeBuilder class 
@@ -69,23 +69,27 @@ public class ConfigurationBasedTypeBuilder implements TypeBuilder<Object> {
 		this.jrgenContext = jrgenContext;
 		random = new Random();
 		descriptor = new Descriptor();
-		abstractTypeHandler = jrgenContext.getAbstractTypeHandler();
 	}
 
 	@Override
 	public Object build(JavaType javaType) {
-		Map<String, Object> tempObj = new HashMap<String, Object>();
+		AbstractTypeHandler abstractTypeHandler = 
+				jrgenContext.getAbstractTypeHandler();
 		
 		javaType = abstractTypeHandler
-				.findAbstractTypeDefaultJavaType(javaType);
+				.findAbstractTypeDefaultJavaType(javaType);	
+		
+		Set<String> ignoreProperties = jrgenContext
+				.getTransientPropertyHandler()
+				.getProperties(javaType);
+		
+		Map<String, Object> propertiesMap = new HashMap<String, Object>();
 		
 		//Find configuration object...Resolve on the object type level first.
-		Configuration objConfig = jrgenContext.getTypeMap().get(javaType);
+		resolveByObjectConfig(javaType, propertiesMap, ignoreProperties);
 		
-		if (objConfig != null) {
-			tempObj = resolveByObjectConfig(objConfig);
-		}
-		
+		//Find the description of the javaType. The description contains all
+		//the properties for the type we are trying to resolve.
 		Map<String, JavaType> description = descriptor.describe(javaType);
 		
 		if (MapUtils.isEmpty(description)) {
@@ -93,87 +97,90 @@ public class ConfigurationBasedTypeBuilder implements TypeBuilder<Object> {
 		}
 
 		//If top-level configuration has undefined fields, use field level
-		//configuration
-		resolveByFieldConfig(description, tempObj);
+		//configuration.
+		resolveByFieldConfig(description, propertiesMap);
 		
 		//If there are fields that cannot be resolved through configuration
 		//files (or lack thereof) try pass the field type to the workflow.
-		resolveByWorkflow(description, tempObj);
+		resolveByWorkflow(description, propertiesMap, ignoreProperties);
 		
 		//If fields are undefined in configurations, generate the values
 		//if this setting is turned on.
-		generateDefaultsForUndefined(description, tempObj);		
+		generateDefaultsForUndefined(description, propertiesMap);		
 		
-		return MapUtils.isEmpty(tempObj) ? null : abstractTypeHandler
-				.getObjectMapper().convertValue(tempObj, javaType);
+		return MapUtils.isEmpty(propertiesMap) ? null : abstractTypeHandler
+				.getObjectMapper().convertValue(propertiesMap, javaType);
 	}
 	
-	private Map<String, Object> resolveByObjectConfig (Configuration config) {
-		Map<String, Object> tempObj = new HashMap<String, Object>();
-		Map<String, List<Object>> configData = config.getData();
+	private void resolveByObjectConfig (JavaType javaType, 
+			Map<String, Object> propertiesMap,
+			Set<String> ignoreProperties) {
 		
-		if (!MapUtils.isEmpty(configData)) {
-			for (Entry<String, List<Object>> configDataEntry : 
-				configData.entrySet()) {
-				
-				String fieldName = configDataEntry.getKey();
+		Configuration config = jrgenContext.getTypeMap().get(javaType);
+		
+		if (config == null || MapUtils.isEmpty(config.getData())) {
+			return;
+		} 				
+		
+		for (Entry<String, List<Object>> configDataEntry : 
+			config.getData().entrySet()) {
+			
+			String fieldName = configDataEntry.getKey();
+			
+			if (!isPropertyIgnored(fieldName, ignoreProperties)) {
 				List<Object> fieldData = configDataEntry.getValue();
-				
-				tempObj.put(fieldName, 
-						fieldData.get(random.nextInt(fieldData.size())));
+				propertiesMap.put(fieldName, 
+						fieldData.get(random.nextInt(fieldData.size())));				
 			}
-		} 
-		
-		return tempObj;
+		}
 	}
 	
 	private void resolveByFieldConfig (Map<String, JavaType> description,
-			Map<String, Object> tempObj) {
-		if (MapUtils.isEmpty(description)) {
-			return;
-		}
+			Map<String, Object> propertiesMap) {
 		
 		for (Entry<String, JavaType> d : description.entrySet()) {
+			String fieldName = d.getKey();			
 			JavaType fieldJavaType = d.getValue();
-			String fieldName = d.getKey();
 			
-			Configuration fieldTypeConfig = jrgenContext
-					.getTypeMap()
-					.get(fieldJavaType);			
+			Set<String> ignoreProperties = jrgenContext
+					.getTransientPropertyHandler()
+					.getProperties(fieldJavaType);
 			
-			if (!tempObj.containsKey(fieldName) && fieldTypeConfig != null) {
-				Map<String, Object> fieldResult = 
-						resolveByObjectConfig(fieldTypeConfig);
+			if (!propertiesMap.containsKey(fieldName)) {
+				Map<String, Object> fieldPropertiesMap = 
+						new HashMap<String, Object>();
+				resolveByObjectConfig(fieldJavaType, fieldPropertiesMap, 
+						ignoreProperties);
 				
-				if (!MapUtils.isEmpty(fieldResult)) {	
-					tempObj.put(fieldName, fieldResult);
+				if (!MapUtils.isEmpty(fieldPropertiesMap)) {	
+					propertiesMap.put(fieldName, fieldPropertiesMap);
 				}
 			}
 		}
 	}
 	
 	private void resolveByWorkflow (Map<String, JavaType> description,
-			Map<String, Object> tempObj) {
-		if (MapUtils.isEmpty(description) || 
-				!jrgenContext.getSettings().isGenerateUndefined()) {
-			return;
-		}
+			Map<String, Object> propertiesMap, 
+			Set<String> ignoreProperties) {
 		
 		for (Entry<String, JavaType> d : description.entrySet()) {
 			JavaType fieldJavaType = d.getValue();
-			String fieldName = d.getKey();
+			String fieldName = d.getKey();		
 			
-			if (!tempObj.containsKey(fieldName)) {
-				Object tempValue = jrgenContext.getWorkflow()
-						.workflow(fieldJavaType);
-				
-				tempObj.put(fieldName, tempValue);
+			if (!isPropertyIgnored(fieldName, ignoreProperties)) {
+				if (!propertiesMap.containsKey(fieldName)) {
+					Object tempValue = jrgenContext.getWorkflow()
+							.workflow(fieldJavaType);
+					
+					propertiesMap.put(fieldName, tempValue);
+				}
 			}
 		}
 	}
 	
-	private void resolveUndefined (JavaType fieldJavaType, Map<String, 
-			Object> tempField) {
+	private void resolveUndefined (JavaType fieldJavaType, 
+			Map<String, Object> tempField,
+			Set<String> ignoreProperties) {
 		Map<String, JavaType> fieldDescr = 
 				descriptor.describe(fieldJavaType);
 		
@@ -185,32 +192,44 @@ public class ConfigurationBasedTypeBuilder implements TypeBuilder<Object> {
 				tempField.keySet());
 		
 		for (Object keyObj : diffKeys) {
-			JavaType keyJavaType = fieldDescr.get(keyObj);
-			
-			Object tempValue = jrgenContext
-					.getWorkflow().workflow(keyJavaType);
-			
-			tempField.put(keyObj.toString(), tempValue);
-		}
-	}
-	
-	@SuppressWarnings("unchecked")
-	private void generateDefaultsForUndefined (Map<String, JavaType> description,
-			Map<String, Object> tempObj) {
-		
-		if (MapUtils.isEmpty(description) || 
-				!jrgenContext.getSettings().isGenerateUndefined()) {
-			return;
-		}
-		
-		for (Entry<String, Object> entry : tempObj.entrySet()) {
-			JavaType fieldJavaType = description.get(entry.getKey());
-			
-			if (entry.getValue() instanceof Map) {
-				resolveUndefined(fieldJavaType, 
-						(Map<String, Object>)entry.getValue());
+			if (!isPropertyIgnored(keyObj.toString(), ignoreProperties)) {
+				JavaType keyJavaType = fieldDescr.get(keyObj);
+				
+				Object tempValue = jrgenContext
+						.getWorkflow().workflow(keyJavaType);
+				
+				tempField.put(keyObj.toString(), tempValue);
 			}
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
+	private void generateDefaultsForUndefined (
+			Map<String, JavaType> description,
+			Map<String, Object> propertiesMap) {
+		
+		if (!jrgenContext.getSettings().isGenerateUndefined()) {
+			return;
+		}
+		
+		for (Entry<String, Object> entry : propertiesMap.entrySet()) {
+			JavaType fieldJavaType = description.get(entry.getKey());
+			
+			Set<String> ignoreProperties = jrgenContext
+					.getTransientPropertyHandler()
+					.getProperties(fieldJavaType);
+			
+			if (entry.getValue() instanceof Map) {
+				resolveUndefined(fieldJavaType, 
+						(Map<String, Object>)entry.getValue(), 
+						ignoreProperties);
+			}
+		}
+	}
+	
+	private boolean isPropertyIgnored (String fieldName, 
+			Set<String> ignoreProperties) {
+		return ignoreProperties != null && 
+				ignoreProperties.contains(fieldName);
+	}
 }
