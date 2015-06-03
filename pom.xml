@@ -1,10 +1,32 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.github.jrgen</groupId>
+  <groupId>com.github.itsajskid</groupId>
   <artifactId>jrgen</artifactId>
   <version>1.1.0-RELEASE</version>
   <name>Java Random Generator</name>
   <description>Generate Random Data for Consumption</description>
+  <url>https://github.com/itsajskid/jrgen</url>
+  
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  
+  <developers>
+    <developer>
+      <name>Allan J. Shoulders</name>
+      <email>allan.shoulders@gmail.com</email>
+    </developer>
+  </developers>
+  
+  <scm>
+    <connection>scm:git:git@github.com:itsajskid/jrgen.git</connection>
+    <developerConnection>scm:git:git@github.com:itsajskid/jrgen.git</developerConnection>
+    <url>git@github.com:itsajskid/jrgen.git</url>
+  </scm>
+    
   <build>
   	<plugins>
   		<plugin>
@@ -18,6 +40,7 @@
   		</plugin>
   	</plugins>
   </build>
+  
   <dependencies>
   	<dependency>
   		<groupId>junit</groupId>
