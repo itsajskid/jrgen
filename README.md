@@ -24,7 +24,8 @@ Generate a Java-bean named NutritionFacts (properties omitted)
 	NutritionFacts nFacts = jrgenContext.generate(NutritionFacts.class);
 	log.info(nFacts);
 	
-	Output:	INFO: NutritionFacts [calories=4338, 
+	Output:
+	INFO: NutritionFacts [calories=4338, 
 	caloriesFromFat=1889,
 	servingSize=o1n9A9R9H1o3v5v1T3h4U6,
 	servingsPerContainer=5629, 
@@ -41,15 +42,20 @@ Generate a Java-bean named NutritionFacts (properties omitted)
 	sugar=320, 
 	protein=677]
 
-JRGEN allows you to control the data that gets generated. See the Wiki or the <i>JRGEN By Example Guide</i> for further details.
-## Getting JRGEN
-JRGEN is currently in a pre-release stage. It is not yet in Maven, however, you can download the following artifacts in the [releases](https://github.com/itsajskid/jrgen/releases):  
+JRGEN allows you to control the data that gets generated. See the Wiki or the <i>JRGEN By Example Guide</i> for further details.
 
-- JRGEN v.1.0.0 library
-- JRGEN v.1.0.0 source code
-- JRGEN v.1.0.0 pom.xml (Maven)
-- JRGEN v.1.0.0 javadoc
-- <i>JRGEN By Example PDF</i> (for those who prefer printed or static documents).
+## Getting JRGEN
+###Maven
+
+Add this dependency to your pom.xml:
+
+	<dependency>
+		<groupId>com.github.itsajskid</groupId>
+    		<artifactId>jrgen</artifactId>
+    		<version>1.1.0-RELEASE</version>
+	</dependency>
+
+You can download JRGEN artifacts individually [here](https://github.com/itsajskid/jrgen/releases).
 
 ##Supported Java Versions
 JRGEN was built using Java 6. We plan to release a Java 8 version that takes advantage of all of Java 8's features. We chose Java 6 to reach a developer audience who may be be forced (or even prefer) Java 6.
